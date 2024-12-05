@@ -234,14 +234,9 @@
             <div class="download-options">
                 <label for="imageFileName">Output File Name:</label>
                 <input class="input" type="text" id="imageFileName" value="compressed_images">
-                <label for="imageLocation">Download Location:</label>
-                <input class="input" type="text" id="imageLocation" placeholder="e.g., C:\Downloads" readonly>
                 <div class="button-group">
-                    <button class="btn" onclick="document.getElementById('imageDirPicker').click()">Choose
-                        Location</button>
                     <button class="btn" id="compressImages">Compress & Download Images</button>
                 </div>
-                <input type="file" id="imageDirPicker" webkitdirectory directory style="display: none">
             </div>
             <div id="imageStatus" class="status"></div>
         </div>
@@ -257,14 +252,9 @@
             <div class="download-options">
                 <label class="label" for="videoFileName">Output File Name:</label>
                 <input class="input" type="text" id="videoFileName" value="compressed_videos">
-                <label class="label" for="videoLocation">Download Location:</label>
-                <input class="input" type="text" id="videoLocation" placeholder="e.g., C:\Downloads" readonly>
                 <div class="button-group">
-                    <button class="btn" onclick="document.getElementById('videoDirPicker').click()">Choose
-                        Location</button>
                     <button class="btn" id="compressVideos">Compress & Download Videos</button>
                 </div>
-                <input type="file" id="videoDirPicker" webkitdirectory directory style="display: none">
             </div>
             <div id="videoStatus" class="status"></div>
         </div>
@@ -275,14 +265,9 @@
             <div class="download-options">
                 <label class="label" for="frameFileName">Output File Name:</label>
                 <input class="input" type="text" id="frameFileName" value="video_frames">
-                <label class="label" for="frameLocation">Download Location:</label>
-                <input class="input" type="text" id="frameLocation" placeholder="e.g., C:\Downloads" readonly>
                 <div class="button-group">
-                    <button class="btn" onclick="document.getElementById('frameDirPicker').click()">Choose
-                        Location</button>
                     <button class="btn" id="extractFrames">Extract Frames & Download</button>
                 </div>
-                <input type="file" id="frameDirPicker" webkitdirectory directory style="display: none">
             </div>
             <div id="frameStatus" class="status"></div>
         </div>
@@ -322,19 +307,6 @@
         function updateThemeIcon(theme) {
             icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
         }
-
-        // Directory picker handlers
-        document.getElementById('imageDirPicker').addEventListener('change', (e) => {
-            document.getElementById('imageLocation').value = e.target.files[0].path.split('\\').slice(0, -1).join('\\');
-        });
-
-        document.getElementById('videoDirPicker').addEventListener('change', (e) => {
-            document.getElementById('videoLocation').value = e.target.files[0].path.split('\\').slice(0, -1).join('\\');
-        });
-
-        document.getElementById('frameDirPicker').addEventListener('change', (e) => {
-            document.getElementById('frameLocation').value = e.target.files[0].path.split('\\').slice(0, -1).join('\\');
-        });
 
         // Image Compression & Conversion
         document.getElementById('compressImages').addEventListener('click', async () => {

@@ -12,6 +12,7 @@ A web-based tool for compressing and converting images and videos, built with HT
   - Customize output filename
   - Choose download location
   - Batch processing with progress indicator
+  - Zip file download option for multiple files
 
 - **Video Compression & Conversion**
   - Compress multiple videos simultaneously
@@ -19,6 +20,7 @@ A web-based tool for compressing and converting images and videos, built with HT
   - Customize output filename
   - Choose download location
   - Batch processing with progress indicator
+  - Zip file download option for multiple files
 
 - **Video Frame Extraction**
   - Extract frames from video files
@@ -26,24 +28,27 @@ A web-based tool for compressing and converting images and videos, built with HT
   - Customize output filename
   - Choose download location
   - Progress tracking during extraction
+  - Zip file download option for multiple frames
 
 ## Additional Features
 
-- Dark/Light theme toggle
-- Responsive design for mobile devices
-- Progress indicators for all operations
-- Batch file processing
+- Dark/Light theme toggle with smooth transitions
+- Fully responsive design for all devices
+- Real-time progress indicators for all operations
+- Efficient batch file processing
 - Custom naming for output files
-- Social media links
+- Social media integration
+- Modern UI with Cinzel font
+- Error handling and status messages
 
 ## Technologies Used
 
 - HTML5
-- CSS3
-- JavaScript
-- JSZip library for file compression
-- Font Awesome icons
-- Google Fonts
+- CSS3 with CSS Variables for theming
+- Vanilla JavaScript
+- JSZip library for file compression and bundling
+- Font Awesome 6.0 icons
+- Google Fonts (Cinzel)
 
 ## Usage
 
@@ -53,10 +58,11 @@ A web-based tool for compressing and converting images and videos, built with HT
 4. Set a custom filename (optional)
 5. Choose your download location
 6. Click the appropriate action button to begin processing
+7. Download processed files individually or as a zip bundle
 
 ## Installation
 
-No installation required! Simply open the HTML file in a modern web browser to use the application.
+No installation required! Simply visit the website or open the HTML file in any modern web browser to use the application.
 
 ## License
 
