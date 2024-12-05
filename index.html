@@ -230,6 +230,7 @@
                 <option value="image/jpeg">JPEG</option>
                 <option value="image/png">PNG</option>
                 <option value="image/webp">WebP</option>
+                <option value="application/pdf">PDF</option>
             </select>
             <div class="download-options">
                 <label for="imageFileName">Output File Name:</label>
@@ -324,45 +325,107 @@
             statusElement.textContent = 'Processing images...';
             let processedCount = 0;
 
-            for (const file of files) {
-                const img = new Image();
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
+            // If 2 or more images, force PDF mode
+            if (files.length >= 2) {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                let currentPage = 0;
 
-                const dataUrl = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(file);
-                });
+                for (const file of files) {
+                    const img = new Image();
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
 
-                img.src = dataUrl;
-                await new Promise((resolve) => (img.onload = resolve));
+                    const dataUrl = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.readAsDataURL(file);
+                    });
 
-                canvas.width = img.width / 2; // Reduce size by half
-                canvas.height = img.height / 2;
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    img.src = dataUrl;
+                    await new Promise((resolve) => (img.onload = resolve));
 
-                const compressedDataUrl = canvas.toDataURL(format, 0.8); // Adjust quality
-                zip.file(file.name.replace(/\.[^.]+$/, `.${format.split('/')[1]}`), compressedDataUrl.split(',')[1], { base64: true });
+                    canvas.width = img.width / 2;
+                    canvas.height = img.height / 2;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                processedCount++;
-                const progress = Math.round((processedCount / files.length) * 100);
-                statusElement.textContent = `Processing images: ${progress}%`;
+                    if (currentPage > 0) {
+                        pdf.addPage();
+                    }
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+                    currentPage++;
+                    processedCount++;
+                    const progress = Math.round((processedCount / files.length) * 100);
+                    statusElement.textContent = `Processing images: ${progress}%`;
+                }
+
+                statusElement.textContent = 'Creating PDF...';
+                const pdfBlob = new Blob([pdf.output('blob')], { type: 'application/pdf' });
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+
+                const a = document.createElement('a');
+                a.href = pdfUrl;
+                a.download = `${fileName}.pdf`;
+                a.click();
+
+                URL.revokeObjectURL(pdfUrl);
+            } else {
+                // Original single image processing
+                for (const file of files) {
+                    const img = new Image();
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    const dataUrl = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.readAsDataURL(file);
+                    });
+
+                    img.src = dataUrl;
+                    await new Promise((resolve) => (img.onload = resolve));
+
+                    canvas.width = img.width / 2;
+                    canvas.height = img.height / 2;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    if (format === 'application/pdf') {
+                        const { jsPDF } = window.jspdf;
+                        const pdf = new jsPDF();
+                        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                        const pdfData = pdf.output('arraybuffer');
+                        zip.file(file.name.replace(/\.[^.]+$/, '.pdf'), pdfData);
+                    } else {
+                        const compressedDataUrl = canvas.toDataURL(format, 0.8);
+                        zip.file(file.name.replace(/\.[^.]+$/, `.${format.split('/')[1]}`), compressedDataUrl.split(',')[1], { base64: true });
+                    }
+
+                    processedCount++;
+                    const progress = Math.round((processedCount / files.length) * 100);
+                    statusElement.textContent = `Processing images: ${progress}%`;
+                }
+
+                statusElement.textContent = 'Creating zip file...';
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                const zipUrl = URL.createObjectURL(zipBlob);
+
+                const a = document.createElement('a');
+                a.href = zipUrl;
+                a.download = `${fileName}.zip`;
+                a.click();
+
+                URL.revokeObjectURL(zipUrl);
             }
 
-            statusElement.textContent = 'Creating zip file...';
-            const zipBlob = await zip.generateAsync({ type: 'blob' });
-            const zipUrl = URL.createObjectURL(zipBlob);
-
-            statusElement.textContent = 'Downloading...';
-            const a = document.createElement('a');
-            a.href = zipUrl;
-            a.download = `${fileName}.zip`;
-            a.click();
-
-            URL.revokeObjectURL(zipUrl);
             statusElement.textContent = 'Download complete!';
-
             setTimeout(() => {
                 statusElement.textContent = '';
             }, 3000);
@@ -483,6 +546,8 @@
 
     <!-- Include JSZip library for zipping files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Include jsPDF library for PDF conversion -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 
 </html>
