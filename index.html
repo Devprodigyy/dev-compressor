@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image & Video Compressor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Kaushan+Script&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --container-bg: #f9f9f9;
+            --border-color: #ccc;
+            --primary-color: #007BFF;
+            --primary-hover: #0056b3;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --container-bg: #2d2d2d;
+            --border-color: #444;
+            --primary-color: #0066cc;
+            --primary-hover: #004c99;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+            font-family: "Cinzel", serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 100px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #title {
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--container-bg);
+        }
+
+        .container h2 {
+            margin-top: 0;
+        }
+
+        input[type="file"],
+        input[type="text"] {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .input {
+            height: 30px;
+            padding-left: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            font-family: "Cinzel", serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            border-radius: 5px;
+            font-weight: 600;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .format {
+            height: 30px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border-radius: 2px;
+            outline: none;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .file-input {
+            height: 30px;
+            padding-left: 10px;
+            padding-right: 10px;
+            background-color: red;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            color: white;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .status {
+            margin-top: 10px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .download-options {
+            margin: 10px 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5vh;
+            background: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 20px;
+            color: white;
+            font-weight: 500;
+            box-sizing: border-box;
+        }
+
+        #theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        main {
+            margin-top: 5vh;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .social-links {
+            margin-bottom: 10px;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 24px;
+            margin: 0 10px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #ccc;
+        }
+
+        .copyright {
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <span>Devprodigy</span>
+        <button id="theme-toggle">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <main>
+        <h1 id="title">Image & Video Compressor</h1>
+
+        <div class="container">
+            <h2>Image Compressor</h2>
+            <input type="file" id="imageInput" multiple accept="image/*">
+            <label for="imageFormat">Convert Format:</label>
+            <select id="imageFormat" class="format">
+                <option value="image/jpeg">JPEG</option>
+                <option value="image/png">PNG</option>
+                <option value="image/webp">WebP</option>
+            </select>
+            <div class="download-options">
+                <label for="imageFileName">Output File Name:</label>
+                <input class="input" type="text" id="imageFileName" value="compressed_images">
+                <label for="imageLocation">Download Location:</label>
+                <input class="input" type="text" id="imageLocation" placeholder="e.g., C:\Downloads" readonly>
+                <div class="button-group">
+                    <button class="btn" onclick="document.getElementById('imageDirPicker').click()">Choose
+                        Location</button>
+                    <button class="btn" id="compressImages">Compress & Download Images</button>
+                </div>
+                <input type="file" id="imageDirPicker" webkitdirectory directory style="display: none">
+            </div>
+            <div id="imageStatus" class="status"></div>
+        </div>
+
+        <div class="container">
+            <h2>Video Compressor</h2>
+            <input type="file" id="videoInput" multiple accept="video/*">
+            <label class="label" for="videoFormat">Convert Format:</label>
+            <select id="videoFormat" class="format">
+                <option value="video/webm">WebM</option>
+                <option value="video/mp4">MP4</option>
+            </select>
+            <div class="download-options">
+                <label class="label" for="videoFileName">Output File Name:</label>
+                <input class="input" type="text" id="videoFileName" value="compressed_videos">
+                <label class="label" for="videoLocation">Download Location:</label>
+                <input class="input" type="text" id="videoLocation" placeholder="e.g., C:\Downloads" readonly>
+                <div class="button-group">
+                    <button class="btn" onclick="document.getElementById('videoDirPicker').click()">Choose
+                        Location</button>
+                    <button class="btn" id="compressVideos">Compress & Download Videos</button>
+                </div>
+                <input type="file" id="videoDirPicker" webkitdirectory directory style="display: none">
+            </div>
+            <div id="videoStatus" class="status"></div>
+        </div>
+
+        <div class="container">
+            <h2>Convert Video to Frames</h2>
+            <input type="file" id="videoFrameInput" accept="video/*">
+            <div class="download-options">
+                <label class="label" for="frameFileName">Output File Name:</label>
+                <input class="input" type="text" id="frameFileName" value="video_frames">
+                <label class="label" for="frameLocation">Download Location:</label>
+                <input class="input" type="text" id="frameLocation" placeholder="e.g., C:\Downloads" readonly>
+                <div class="button-group">
+                    <button class="btn" onclick="document.getElementById('frameDirPicker').click()">Choose
+                        Location</button>
+                    <button class="btn" id="extractFrames">Extract Frames & Download</button>
+                </div>
+                <input type="file" id="frameDirPicker" webkitdirectory directory style="display: none">
+            </div>
+            <div id="frameStatus" class="status"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/devprodigy/" target="_blank"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/Devprodigyy" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/devprodigy__/" target="_blank"><i class="fab fa-instagram"></i></a>
+            <!-- <a href="https://twitter.com/yourusername" target="_blank"><i class="fab fa-twitter"></i></a> -->
+        </div>
+        <div class="copyright">
+            © 2024 Devprodigy. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const icon = themeToggle.querySelector('i');
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // Directory picker handlers
+        document.getElementById('imageDirPicker').addEventListener('change', (e) => {
+            document.getElementById('imageLocation').value = e.target.files[0].path.split('\\').slice(0, -1).join('\\');
+        });
+
+        document.getElementById('videoDirPicker').addEventListener('change', (e) => {
+            document.getElementById('videoLocation').value = e.target.files[0].path.split('\\').slice(0, -1).join('\\');
+        });
+
+        document.getElementById('frameDirPicker').addEventListener('change', (e) => {
+            document.getElementById('frameLocation').value = e.target.files[0].path.split('\\').slice(0, -1).join('\\');
+        });
+
+        // Image Compression & Conversion
+        document.getElementById('compressImages').addEventListener('click', async () => {
+            const files = document.getElementById('imageInput').files;
+            const format = document.getElementById('imageFormat').value;
+            const fileName = document.getElementById('imageFileName').value || 'compressed_images';
+            const zip = new JSZip();
+            const statusElement = document.getElementById('imageStatus');
+
+            if (!files.length) {
+                alert('Please select images to compress!');
+                return;
+            }
+
+            statusElement.textContent = 'Processing images...';
+            let processedCount = 0;
+
+            for (const file of files) {
+                const img = new Image();
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                const dataUrl = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
+
+                img.src = dataUrl;
+                await new Promise((resolve) => (img.onload = resolve));
+
+                canvas.width = img.width / 2; // Reduce size by half
+                canvas.height = img.height / 2;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const compressedDataUrl = canvas.toDataURL(format, 0.8); // Adjust quality
+                zip.file(file.name.replace(/\.[^.]+$/, `.${format.split('/')[1]}`), compressedDataUrl.split(',')[1], { base64: true });
+
+                processedCount++;
+                const progress = Math.round((processedCount / files.length) * 100);
+                statusElement.textContent = `Processing images: ${progress}%`;
+            }
+
+            statusElement.textContent = 'Creating zip file...';
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const zipUrl = URL.createObjectURL(zipBlob);
+
+            statusElement.textContent = 'Downloading...';
+            const a = document.createElement('a');
+            a.href = zipUrl;
+            a.download = `${fileName}.zip`;
+            a.click();
+
+            URL.revokeObjectURL(zipUrl);
+            statusElement.textContent = 'Download complete!';
+
+            setTimeout(() => {
+                statusElement.textContent = '';
+            }, 3000);
+        });
+
+        // Video Compression & Conversion
+        document.getElementById('compressVideos').addEventListener('click', async () => {
+            const files = document.getElementById('videoInput').files;
+            const format = document.getElementById('videoFormat').value;
+            const fileName = document.getElementById('videoFileName').value || 'compressed_videos';
+            const zip = new JSZip();
+            const statusElement = document.getElementById('videoStatus');
+
+            if (!files.length) {
+                alert('Please select videos to compress!');
+                return;
+            }
+
+            statusElement.textContent = 'Processing videos...';
+            let processedCount = 0;
+
+            for (const file of files) {
+                const blob = new Blob([file], { type: format });
+                zip.file(file.name.replace(/\.[^.]+$/, `.${format.split('/')[1]}`), blob);
+
+                processedCount++;
+                const progress = Math.round((processedCount / files.length) * 100);
+                statusElement.textContent = `Processing videos: ${progress}%`;
+            }
+
+            statusElement.textContent = 'Creating zip file...';
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const zipUrl = URL.createObjectURL(zipBlob);
+
+            statusElement.textContent = 'Downloading...';
+            const a = document.createElement('a');
+            a.href = zipUrl;
+            a.download = `${fileName}.zip`;
+            a.click();
+
+            URL.revokeObjectURL(zipUrl);
+            statusElement.textContent = 'Download complete!';
+
+            setTimeout(() => {
+                statusElement.textContent = '';
+            }, 3000);
+        });
+
+        // Extract Frames from Video
+        document.getElementById('extractFrames').addEventListener('click', async () => {
+            const file = document.getElementById('videoFrameInput').files[0];
+            const fileName = document.getElementById('frameFileName').value || 'video_frames';
+            const statusElement = document.getElementById('frameStatus');
+
+            if (!file) {
+                alert('Please select a video to extract frames!');
+                return;
+            }
+
+            try {
+                const video = document.createElement('video');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const zip = new JSZip();
+
+                statusElement.textContent = 'Loading video...';
+                const videoUrl = URL.createObjectURL(file);
+                video.src = videoUrl;
+
+                await new Promise((resolve) => (video.onloadedmetadata = resolve));
+                const duration = video.duration;
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                video.currentTime = 0;
+                await new Promise((resolve) => (video.onseeked = resolve));
+
+                const frameRate = 1; // 1 frame per second
+                const totalFrames = Math.ceil(duration / frameRate);
+                let processedFrames = 0;
+
+                for (let time = 0; time < duration; time += frameRate) {
+                    video.currentTime = time;
+                    await new Promise((resolve) => (video.onseeked = resolve));
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    const frameDataUrl = canvas.toDataURL('image/webp', 0.8);
+                    zip.file(`frame_${Math.round(time)}.webp`, frameDataUrl.split(',')[1], { base64: true });
+
+                    processedFrames++;
+                    const progress = Math.round((processedFrames / totalFrames) * 100);
+                    statusElement.textContent = `Processing frames: ${progress}%`;
+                }
+
+                statusElement.textContent = 'Creating zip file...';
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                const zipUrl = URL.createObjectURL(zipBlob);
+
+                statusElement.textContent = 'Downloading...';
+                const a = document.createElement('a');
+                a.href = zipUrl;
+                a.download = `${fileName}.zip`;
+                a.click();
+
+                URL.revokeObjectURL(zipUrl);
+                statusElement.textContent = 'Download complete!';
+
+                setTimeout(() => {
+                    statusElement.textContent = '';
+                }, 3000);
+            } catch (error) {
+                statusElement.textContent = 'An error occurred during processing';
+                console.error(error);
+            }
+        });
+    </script>
+
+    <!-- Include JSZip library for zipping files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</body>
+
+</html>
