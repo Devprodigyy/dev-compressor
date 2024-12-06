@@ -2,7 +2,7 @@
 
 A web-based tool for compressing and converting images and videos, built with HTML, CSS, and JavaScript.
 
-🌐 [Visit the Site](https://devprodigy.github.io/image-video-compressor)
+🌐 [Visit the Site](https://dev-compressor.vercel.app/)
 
 ## Features
 
