@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image & Video Compressor</title>
+    <title>Image, Video & Document Converter</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Kaushan+Script&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Kaushan+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
@@ -220,7 +219,7 @@
     </div>
 
     <main>
-        <h1 id="title">Image & Video Compressor</h1>
+        <h1 id="title">Image, Video & Document Converter</h1>
 
         <div class="container">
             <h2>Image Compressor</h2>
@@ -271,6 +270,32 @@
                 </div>
             </div>
             <div id="frameStatus" class="status"></div>
+        </div>
+
+        <div class="container">
+            <h2>PDF to MS Word Converter</h2>
+            <input type="file" id="pdfInput" accept=".pdf">
+            <div class="download-options">
+                <label class="label" for="docFileName">Output File Name:</label>
+                <input class="input" type="text" id="docFileName" value="converted_document">
+                <div class="button-group">
+                    <button class="btn" id="convertPdfToWord">Convert PDF to Word & Download</button>
+                </div>
+            </div>
+            <div id="pdfStatus" class="status"></div>
+        </div>
+
+        <div class="container">
+            <h2>MS Word to PDF Converter</h2>
+            <input type="file" id="wordInput" accept=".doc,.docx">
+            <div class="download-options">
+                <label class="label" for="pdfFileName">Output File Name:</label>
+                <input class="input" type="text" id="pdfFileName" value="converted_pdf">
+                <div class="button-group">
+                    <button class="btn" id="convertWordToPdf">Convert Word to PDF & Download</button>
+                </div>
+            </div>
+            <div id="wordStatus" class="status"></div>
         </div>
     </main>
 
@@ -542,12 +567,111 @@
                 console.error(error);
             }
         });
+
+        // PDF to Word Conversion
+        document.getElementById('convertPdfToWord').addEventListener('click', async () => {
+            const file = document.getElementById('pdfInput').files[0];
+            const fileName = document.getElementById('docFileName').value || 'converted_document';
+            const statusElement = document.getElementById('pdfStatus');
+
+            if (!file) {
+                alert('Please select a PDF file to convert!');
+                return;
+            }
+
+            try {
+                statusElement.textContent = 'Converting PDF to Word...';
+                
+                // Using pdf.js to read the PDF
+                const pdfjsLib = window['pdfjs-dist/build/pdf'];
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
+
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                let text = '';
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    text += content.items.map(item => item.str).join(' ') + '\n\n';
+                }
+
+                // Create a simple .docx file
+                const docx = new Blob([text], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                const docxUrl = URL.createObjectURL(docx);
+
+                const a = document.createElement('a');
+                a.href = docxUrl;
+                a.download = `${fileName}.docx`;
+                a.click();
+
+                URL.revokeObjectURL(docxUrl);
+                statusElement.textContent = 'Conversion complete!';
+
+                setTimeout(() => {
+                    statusElement.textContent = '';
+                }, 3000);
+            } catch (error) {
+                statusElement.textContent = 'An error occurred during conversion';
+                console.error(error);
+            }
+        });
+
+        // Word to PDF Conversion
+        document.getElementById('convertWordToPdf').addEventListener('click', async () => {
+            const file = document.getElementById('wordInput').files[0];
+            const fileName = document.getElementById('pdfFileName').value || 'converted_pdf';
+            const statusElement = document.getElementById('wordStatus');
+
+            if (!file) {
+                alert('Please select a Word document to convert!');
+                return;
+            }
+
+            try {
+                statusElement.textContent = 'Converting Word to PDF...';
+
+                // Read the Word document content
+                const text = await file.text();
+
+                // Create PDF using jsPDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                
+                // Split text into lines and add to PDF
+                const lines = text.split('\n');
+                let y = 20;
+                
+                lines.forEach(line => {
+                    if (y > 280) {
+                        pdf.addPage();
+                        y = 20;
+                    }
+                    pdf.text(line, 20, y);
+                    y += 7;
+                });
+
+                // Download the PDF
+                pdf.save(`${fileName}.pdf`);
+                
+                statusElement.textContent = 'Conversion complete!';
+
+                setTimeout(() => {
+                    statusElement.textContent = '';
+                }, 3000);
+            } catch (error) {
+                statusElement.textContent = 'An error occurred during conversion';
+                console.error(error);
+            }
+        });
     </script>
 
     <!-- Include JSZip library for zipping files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <!-- Include jsPDF library for PDF conversion -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Include PDF.js library for PDF to Word conversion -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
 </body>
 
 </html>
