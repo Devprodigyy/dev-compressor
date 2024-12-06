@@ -48,11 +48,25 @@
 
         #title {
             text-align: center;
+            width: 100%;
+        }
+
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 5vh;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 20px;
         }
 
         .container {
+            flex: 1 1 300px;
+            min-width: 300px;
             max-width: 600px;
-            margin: 20px;
+            margin: 10px;
             padding: 20px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -61,10 +75,19 @@
 
         .container h2 {
             margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .container h2 i {
+            font-size: 24px;
+            color: var(--primary-color);
         }
 
         input[type="file"],
-        input[type="text"] {
+        input[type="text"],
+        input[type="url"] {
             margin-bottom: 10px;
             width: 100%;
         }
@@ -93,6 +116,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             border: 1px solid var(--border-color);
+            width: 100%;
         }
 
         .file-input {
@@ -113,6 +137,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            width: 100%;
         }
 
         .btn:hover {
@@ -127,6 +152,7 @@
 
         .download-options {
             margin: 10px 0;
+            width: 100%;
         }
 
         .button-group {
@@ -134,6 +160,7 @@
             gap: 10px;
             align-items: center;
             flex-wrap: wrap;
+            width: 100%;
         }
 
         #header {
@@ -159,10 +186,6 @@
             color: white;
             cursor: pointer;
             font-size: 20px;
-        }
-
-        main {
-            margin-top: 5vh;
         }
 
         footer {
@@ -197,6 +220,11 @@
         }
 
         @media (max-width: 768px) {
+            .container {
+                flex: 1 1 100%;
+                margin: 10px 0;
+            }
+
             .button-group {
                 flex-direction: column;
                 align-items: stretch;
@@ -205,6 +233,20 @@
             .btn {
                 width: 100%;
                 margin: 5px 0;
+            }
+
+            main {
+                padding: 0 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #title {
+                font-size: 24px;
+            }
+
+            .container {
+                padding: 15px;
             }
         }
     </style>
@@ -222,7 +264,7 @@
         <h1 id="title">Image, Video & Document Converter</h1>
 
         <div class="container">
-            <h2>Image Compressor</h2>
+            <h2><i class="fas fa-image"></i> Image Compressor</h2>
             <input type="file" id="imageInput" multiple accept="image/*">
             <label for="imageFormat">Convert Format:</label>
             <select id="imageFormat" class="format">
@@ -242,7 +284,7 @@
         </div>
 
         <div class="container">
-            <h2>Video Compressor</h2>
+            <h2><i class="fas fa-video"></i> Video Compressor</h2>
             <input type="file" id="videoInput" multiple accept="video/*">
             <label class="label" for="videoFormat">Convert Format:</label>
             <select id="videoFormat" class="format">
@@ -260,7 +302,7 @@
         </div>
 
         <div class="container">
-            <h2>Convert Video to Frames</h2>
+            <h2><i class="fas fa-film"></i> Convert Video to Frames</h2>
             <input type="file" id="videoFrameInput" accept="video/*">
             <div class="download-options">
                 <label class="label" for="frameFileName">Output File Name:</label>
@@ -273,7 +315,7 @@
         </div>
 
         <div class="container">
-            <h2>PDF to MS Word Converter</h2>
+            <h2><i class="fas fa-file-pdf"></i> PDF to MS Word Converter</h2>
             <input type="file" id="pdfInput" accept=".pdf">
             <div class="download-options">
                 <label class="label" for="docFileName">Output File Name:</label>
@@ -286,7 +328,7 @@
         </div>
 
         <div class="container">
-            <h2>MS Word to PDF Converter</h2>
+            <h2><i class="fas fa-file-word"></i> MS Word to PDF Converter</h2>
             <input type="file" id="wordInput" accept=".doc,.docx">
             <div class="download-options">
                 <label class="label" for="pdfFileName">Output File Name:</label>
@@ -296,6 +338,15 @@
                 </div>
             </div>
             <div id="wordStatus" class="status"></div>
+        </div>
+
+        <div class="container">
+            <h2><i class="fas fa-link"></i> URL Shortener</h2>
+            <input type="url" id="longUrl" class="input" placeholder="Enter long URL here">
+            <div class="button-group">
+                <button class="btn" id="shortenUrl">Shorten URL</button>
+            </div>
+            <div id="shortUrlResult" class="status"></div>
         </div>
     </main>
 
@@ -333,6 +384,47 @@
         function updateThemeIcon(theme) {
             icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
         }
+
+        // URL Shortener
+        document.getElementById('shortenUrl').addEventListener('click', async () => {
+            const longUrl = document.getElementById('longUrl').value;
+            const resultElement = document.getElementById('shortUrlResult');
+
+            if (!longUrl) {
+                alert('Please enter a URL to shorten!');
+                return;
+            }
+
+            try {
+                resultElement.textContent = 'Shortening URL...';
+                
+                // Using TinyURL API for URL shortening
+                const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+                const shortUrl = await response.text();
+
+                // Create clickable link
+                resultElement.innerHTML = `Shortened URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+
+                // Create copy button
+                const copyButton = document.createElement('button');
+                copyButton.textContent = 'Copy';
+                copyButton.className = 'btn';
+                copyButton.style.width = 'auto';
+                copyButton.style.marginLeft = '10px';
+                copyButton.onclick = () => {
+                    navigator.clipboard.writeText(shortUrl);
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copy';
+                    }, 2000);
+                };
+                resultElement.appendChild(copyButton);
+
+            } catch (error) {
+                resultElement.textContent = 'Error shortening URL. Please try again.';
+                console.error(error);
+            }
+        });
 
         // Image Compression & Conversion
         document.getElementById('compressImages').addEventListener('click', async () => {
